@@ -36,9 +36,6 @@ public class SecurityConfig {
                 .and().authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
                 .and().authorizeHttpRequests()
-                .requestMatchers("/api/book/**").permitAll()
-                .requestMatchers("/api/cart/**").permitAll()
-                .requestMatchers("/api/order/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()
@@ -53,5 +50,6 @@ public class SecurityConfig {
         return http.build();
 
     }
+
 
 }

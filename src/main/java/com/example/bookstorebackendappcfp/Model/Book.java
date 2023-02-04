@@ -12,7 +12,7 @@ public class Book {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private int bookId;
+    private long bookId;
 
     @NonNull
     private String bookName;
@@ -21,10 +21,10 @@ public class Book {
     private String author;
 
     @NonNull
-    private int bookPrice;
+    private long bookPrice;
 
     @NonNull
-    private int quantity;
+    private long quantity;
 
     @NonNull
     private String bookImage;

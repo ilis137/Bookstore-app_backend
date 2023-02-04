@@ -1,22 +1,22 @@
 package com.example.bookstorebackendappcfp.Services;
 
 import com.example.bookstorebackendappcfp.DTO.BookDTO;
-import com.example.bookstorebackendappcfp.Exception.BookNotFoundException;
+import com.example.bookstorebackendappcfp.Exception.BookException;
 
 import java.util.List;
 
 public interface IBookService {
     BookDTO addBookStock(BookDTO bookDTO);
 
-    BookDTO updateBookById(int bookId, BookDTO bookDTO) throws BookNotFoundException;
+    BookDTO updateBookById(long bookId, BookDTO bookDTO) throws BookException;
 
-    boolean deleteBookById(int id) throws BookNotFoundException;
+    boolean deleteBookById(long id) throws BookException;
 
-    List<BookDTO> getAllBooks(int startPage, int size) throws BookNotFoundException;
+    List<BookDTO> getAllBooks(int startPage, int size) throws BookException;
 
-    BookDTO getBook(int id) throws BookNotFoundException;
+    BookDTO getBook(long id) throws BookException;
 
-    BookDTO changePrice(int bookId,int price) throws BookNotFoundException;
+    BookDTO changePrice(long bookId,long price) throws BookException;
 
-    BookDTO changeQuantity(int bookId, int quantity) throws BookNotFoundException;
+    BookDTO changeQuantity(long bookId, long quantity) throws BookException;
 }

@@ -1,6 +1,7 @@
 package com.example.bookstorebackendappcfp.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,6 +41,7 @@ public class User implements UserDetails {
 
     private LocalDate updatedDate;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NonNull
     private String password;
 
@@ -53,10 +55,14 @@ public class User implements UserDetails {
     private String otp;
 
 
+
+
     @Override
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
     }
+
 
     @Override
     public String getUsername() {

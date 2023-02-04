@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class BookDTO {
 
     @Nullable
-    private int bookId;
+    private long bookId;
     @NotNull(message = "Book name should not be null")
     private String bookName;
 
@@ -22,11 +22,11 @@ public class BookDTO {
     private String author;
 
     @NotNull(message = "book prize should not be null")
-    private int bookPrice;
+    private long bookPrice;
 
     @NotNull
     @Min(value = 1, message = "quantity should not be zero")
-    private int quantity;
+    private long quantity;
 
     @NotNull
     private String bookImage;

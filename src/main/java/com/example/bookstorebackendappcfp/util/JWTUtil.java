@@ -10,8 +10,10 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.auth0.jwt.interfaces.Verification;
 import com.example.bookstorebackendappcfp.Model.User;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.SignatureException;
 import java.util.Date;
@@ -99,4 +101,12 @@ public class JWTUtil {
 
     }
 
+    public String parseToken(String authHeader) {
+
+
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7, authHeader.length());
+        }
+        return null;
+    }
 }

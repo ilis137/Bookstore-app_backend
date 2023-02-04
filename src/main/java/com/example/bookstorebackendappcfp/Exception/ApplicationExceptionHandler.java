@@ -9,7 +9,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +42,39 @@ public class ApplicationExceptionHandler {
     }
 
     //---------------------------User not Found invalid exception----------------------//
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ResponseDTO> handleBusinessException(UserNotFoundException exception) {
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ResponseDTO> handleBusinessException(UserException exception) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("Error Message", exception.getMessage());
         ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
         return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
     }
 
+    //---------------------------Book not Found invalid exception----------------------//
+    @ExceptionHandler(BookException.class)
+    public ResponseEntity<ResponseDTO> handleBusinessException(BookException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Error Message", exception.getMessage());
+        ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
+        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
+    //---------------------------Cart not Found invalid exception----------------------//
+    @ExceptionHandler(CartException.class)
+    public ResponseEntity<ResponseDTO> handleBusinessException(CartException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Error Message", exception.getMessage());
+        ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
+        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
+
+    //---------------------------Cart not Found invalid exception----------------------//
+    @ExceptionHandler(OrderException.class)
+    public ResponseEntity<ResponseDTO> handleBusinessException(OrderException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Error Message", exception.getMessage());
+        ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
+        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
     //---------------------------Jwt invalid exception----------------------//
     @ExceptionHandler(JWTDecodeException.class)
     public ResponseEntity<ResponseDTO> methodArgumentException(JWTDecodeException exception) {

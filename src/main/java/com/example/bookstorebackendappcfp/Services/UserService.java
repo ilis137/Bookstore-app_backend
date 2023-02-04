@@ -3,7 +3,7 @@ package com.example.bookstorebackendappcfp.Services;
 import com.example.bookstorebackendappcfp.DTO.LoginDTO;
 import com.example.bookstorebackendappcfp.DTO.ResetPasswordDTO;
 import com.example.bookstorebackendappcfp.DTO.UserRegistrationDTO;
-import com.example.bookstorebackendappcfp.Exception.UserNotFoundException;
+import com.example.bookstorebackendappcfp.Exception.UserException;
 import com.example.bookstorebackendappcfp.Exception.UsernamePasswordInvalidException;
 import com.example.bookstorebackendappcfp.Model.User;
 import com.example.bookstorebackendappcfp.repository.UserRepository;
@@ -44,7 +44,10 @@ public class UserService implements IUserService {
     private static final ModelMapper modelMapper = new ModelMapper();
 
     @Override
-    public String saveUser(UserRegistrationDTO userRegistrationDTO) {
+    public String saveUser(UserRegistrationDTO userRegistrationDTO) throws UserException {
+
+        userRepo.findByEmail(userRegistrationDTO.getEmail()).orElseThrow(()->  new UserException("Error:User already exists"));
+
         String password = userRegistrationDTO.getPassword();
         User user = modelMapper.map(userRegistrationDTO, User.class);
         user.setRegisteredDate(LocalDate.now());
@@ -78,31 +81,30 @@ public class UserService implements IUserService {
 
     @Override
     public UserRegistrationDTO findUser(long id) {
-//       i SecurityContextHolder.getContext().getAuthentication().getDetails();
         return modelMapper.map(userRepo.findById(id), UserRegistrationDTO.class);
     }
 
     @Override
-    public String forgotPassword(String email) throws UserNotFoundException {
+    public String forgotPassword(String email) throws UserException {
 
-        User user = userRepo.findByEmail(email).orElseThrow(()->new UserNotFoundException("user of this email does not exist "+email));
+        User user = userRepo.findByEmail(email).orElseThrow(()->new UserException("user of this email does not exist "+email));
         String token=jwtUtil.createToken(user.getUserId(),user.getEmail());
         return token;
     }
 
     @Override
-    public String resetPassword(ResetPasswordDTO resetPasswordDTO) throws UserNotFoundException {
+    public String resetPassword(ResetPasswordDTO resetPasswordDTO) throws UserException {
        String email= jwtUtil.getEmailFromToken(resetPasswordDTO.getToken());
-        User user=userRepo.findByEmail(email).orElseThrow(()->new UserNotFoundException("user of this email does not exist "+email));
+        User user=userRepo.findByEmail(email).orElseThrow(()->new UserException("user of this email does not exist "+email));
         user.setPassword(resetPasswordDTO.getNewPassword());
         userRepo.save(user);
         return resetPasswordDTO.getToken();
     }
 
     @Override
-    public boolean verifyUser(String token) throws UserNotFoundException {
+    public boolean verifyUser(String token) throws UserException {
        long id = jwtUtil.decodeToken(token);
-        User user=userRepo.findById(id).orElseThrow(()->new UserNotFoundException("user of this id does not exist "+token));
+        User user=userRepo.findById(id).orElseThrow(()->new UserException("user of this id does not exist "+token));
         user.setVerified(true);
         user=userRepo.save(user);
         return user.isVerified();

@@ -2,10 +2,9 @@ package com.example.bookstorebackendappcfp.Services;
 
 
 import com.example.bookstorebackendappcfp.DTO.BookDTO;
-import com.example.bookstorebackendappcfp.Exception.BookNotFoundException;
+import com.example.bookstorebackendappcfp.Exception.BookException;
 import com.example.bookstorebackendappcfp.Model.Book;
 import com.example.bookstorebackendappcfp.repository.BookRepository;
-import com.example.bookstorebackendappcfp.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +28,8 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public BookDTO updateBookById(int bookId, BookDTO bookDTO) throws BookNotFoundException {
-        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book not found"));
+    public BookDTO updateBookById(long bookId, BookDTO bookDTO) throws BookException {
+        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookException("Book not found"));
         book.setBookName(bookDTO.getBookName());
         book.setAuthor(bookDTO.getAuthor());
         book.setBookPrice(bookDTO.getBookPrice());
@@ -40,47 +39,47 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public boolean deleteBookById(int id) throws BookNotFoundException {
+    public boolean deleteBookById(long id) throws BookException {
         // }
         try {
             bookRepo.deleteById(id);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new BookNotFoundException("Book not found");
+            throw new BookException("Book not found");
         }
 
         return true;
     }
 
     @Override
-    public List<BookDTO> getAllBooks(int startPage, int size) throws BookNotFoundException {
+    public List<BookDTO> getAllBooks(int startPage, int size) throws BookException {
         Pageable pageable = PageRequest.of(startPage, size);
         try {
             return bookRepo.findAll(pageable).toList().stream().map(book->modelMapper.map(bookRepo.save(book),BookDTO.class)).collect(Collectors.toList());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new BookNotFoundException("Books not found");
+            throw new BookException("Books not found");
         }
 
     }
 
     @Override
-    public BookDTO getBook(int id) throws BookNotFoundException {
-        Book book= bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Error: Book is not found."));
+    public BookDTO getBook(long id) throws BookException {
+        Book book= bookRepo.findById(id).orElseThrow(() -> new BookException("Error: Book is not found."));
         return modelMapper.map(book,BookDTO.class);
     }
 
     @Override
-    public BookDTO changePrice(int bookId,int price) throws BookNotFoundException {
-        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book not found"));
+    public BookDTO changePrice(long bookId,long price) throws BookException {
+        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookException("Book not found"));
         book.setBookPrice(price);
         book=bookRepo.save(book);
         return modelMapper.map(book,BookDTO.class);
     }
 
     @Override
-    public BookDTO changeQuantity(int bookId, int quantity) throws BookNotFoundException {
-        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book not found"));
+    public BookDTO changeQuantity(long bookId, long quantity) throws BookException {
+        Book book = bookRepo.findById(bookId).orElseThrow(() -> new BookException("Book not found"));
         book.setQuantity(quantity);
         book=bookRepo.save(book);
         return modelMapper.map(book,BookDTO.class);
