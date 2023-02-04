@@ -48,7 +48,7 @@ public class OrderController {
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.FOUND);
     }
 
-    @GetMapping("/updateByOrderId{orderId}")
+    @PutMapping("/updateByOrderId{orderId}")
     public ResponseEntity<ResponseDTO> updateByOrderId(@PathVariable Long orderId,@Valid @RequestBody OrderDTO orderDTO) throws UserException, OrderException {
         ResponseDTO responseOrderDTO = ResponseDTO.Build("Searched order details by id is found!", orderService.updateByOrderId(orderId,orderDTO));
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.FOUND);
