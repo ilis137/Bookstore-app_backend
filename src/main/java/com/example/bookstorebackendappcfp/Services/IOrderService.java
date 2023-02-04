@@ -21,7 +21,7 @@ public interface IOrderService {
     public List<OrderDTO> getByUserId(String authHeader) throws UserException;
 
 
-    public boolean cancelOrder( Long orderId) throws OrderException;
+    public OrderDTO cancelOrder(Long orderId) throws OrderException;
 
     boolean deleteById(Long orderId) throws OrderException;
 

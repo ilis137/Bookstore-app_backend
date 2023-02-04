@@ -80,15 +80,15 @@ public class OrderService implements IOrderService{
     }
 
     @Override
-    public boolean cancelOrder(Long orderId) throws OrderException {
+    public OrderDTO cancelOrder(Long orderId) throws OrderException {
         Order order=orderRepository.findById(orderId).orElseThrow(()->new OrderException("Error:order not found"));
         try {
             order.setCanceled(true);
-            orderRepository.save(order);
+            order=orderRepository.save(order);
             emailSenderService.sendEmail(order.getUser().getEmail(), "Order is canceled!","Hii...."+order.getUser().getFirstName()+" ! \n\n Your order has been deleted successfully! Order id: "+order.getOrderId());
             long newQuantity=order.getBook().getQuantity()+order.getQuantity();
             bookService.changeQuantity(order.getBook().getBookId(),newQuantity);
-            return true;
+            return modelMapper.map(order,OrderDTO.class);
         }catch(Exception e){
             throw new OrderException("Error:order not found");
         }

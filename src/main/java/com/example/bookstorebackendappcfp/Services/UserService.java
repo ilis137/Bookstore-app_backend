@@ -46,10 +46,12 @@ public class UserService implements IUserService {
     @Override
     public String saveUser(UserRegistrationDTO userRegistrationDTO) throws UserException {
 
-        userRepo.findByEmail(userRegistrationDTO.getEmail()).orElseThrow(()->  new UserException("Error:User already exists"));
-
+        User user =userRepo.findByEmail(userRegistrationDTO.getEmail()).orElseThrow();
+        if(user!=null){
+            throw new UserException("Error:user already exists");
+        }
         String password = userRegistrationDTO.getPassword();
-        User user = modelMapper.map(userRegistrationDTO, User.class);
+         user = modelMapper.map(userRegistrationDTO, User.class);
         user.setRegisteredDate(LocalDate.now());
         user.setUpdatedDate(LocalDate.now());
         user.setVerified(false);
@@ -64,18 +66,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException {
+    public String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException, UserException {
 
-        try {
-            User user = userRepo.findByEmail(loginDTO.getEmail()).orElseThrow();
+
+            User user = userRepo.findByEmail(loginDTO.getEmail()).orElseThrow(()->new UserException("Error:User not found"));
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
             String token = jwtUtil.createToken(user.getUserId(), user.getEmail());
              SecurityContextHolder.getContext().setAuthentication(authentication);
             return token;
-        } catch (Exception e) {
-            throw new UsernamePasswordInvalidException("Invalid username or password");
-        }
+
 
     }
 

@@ -55,12 +55,16 @@ public class OrderController {
     }
 
     //Create Api for Deleting particular order details which will be found by id
-    @DeleteMapping("/delete/{orderId}")
-    public ResponseEntity<ResponseDTO> deleteById(@PathVariable Long orderId) throws OrderException {
-        boolean result = orderService.cancelOrder(orderId);
-        ResponseDTO responseOrderDTO = ResponseDTO.Build("Cart details is deleted!", result);
+    @DeleteMapping("/cancel/{orderId}")
+    public ResponseEntity<ResponseDTO> cancelById(@PathVariable Long orderId) throws OrderException {
+
+        ResponseDTO responseOrderDTO = ResponseDTO.Build("Cart details is canceled!", orderService.cancelOrder(orderId));
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.GONE);
     }
 
-
+    @DeleteMapping("/delete/{orderId}")
+    public ResponseEntity<ResponseDTO> deleteById(@PathVariable Long orderId) throws OrderException {
+        ResponseDTO responseOrderDTO = ResponseDTO.Build("Cart details is canceled!", orderService.deleteById(orderId));
+        return new ResponseEntity<>(responseOrderDTO, HttpStatus.GONE);
+    }
 }

@@ -10,7 +10,7 @@ public interface IUserService {
 
         public String saveUser(UserRegistrationDTO userRegistrationDTO) throws UserException;
 
-    String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException;
+    String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException, UserException;
 
     UserRegistrationDTO findUser(long id);
 

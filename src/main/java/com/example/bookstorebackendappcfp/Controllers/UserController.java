@@ -31,7 +31,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> loginUser(@Valid @RequestBody LoginDTO loginDTO) throws UsernamePasswordInvalidException {
+    public ResponseEntity<ResponseDTO> loginUser(@Valid @RequestBody LoginDTO loginDTO) throws UsernamePasswordInvalidException, UserException {
         ResponseDTO responseDTO = ResponseDTO.Build("User authentication successful", userService.AuthenticateUser(loginDTO));
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
