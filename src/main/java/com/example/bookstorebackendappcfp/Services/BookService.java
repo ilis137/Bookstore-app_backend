@@ -40,7 +40,6 @@ public class BookService implements IBookService{
 
     @Override
     public boolean deleteBookById(long id) throws BookException {
-        // }
         try {
             bookRepo.deleteById(id);
         } catch (Exception e) {
@@ -52,10 +51,10 @@ public class BookService implements IBookService{
     }
 
     @Override
-    public List<BookDTO> getAllBooks(int startPage, int size) throws BookException {
-        Pageable pageable = PageRequest.of(startPage, size);
+    public List<BookDTO> getAllBooks() throws BookException {
+      
         try {
-            return bookRepo.findAll(pageable).toList().stream().map(book->modelMapper.map(bookRepo.save(book),BookDTO.class)).collect(Collectors.toList());
+            return bookRepo.findAll().stream().map(book->modelMapper.map(bookRepo.save(book),BookDTO.class)).collect(Collectors.toList());
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new BookException("Books not found");

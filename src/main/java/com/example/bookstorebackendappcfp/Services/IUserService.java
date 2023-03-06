@@ -12,7 +12,7 @@ public interface IUserService {
 
     String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException, UserException;
 
-    UserRegistrationDTO findUser(long id);
+    UserRegistrationDTO findUser(String user);
 
     String forgotPassword(String email) throws UserException;
 

@@ -79,8 +79,7 @@ public class CartService implements ICartService {
     public CartResponseDTO UpdateQuantity( Long id,Long quantity) throws CartException {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new CartException("cart with id " + id + " not found"));
         cart.setQuantity(quantity);
-        cartRepository.save(cart);
+        cart=cartRepository.save(cart);
         return modelMapper.map(cart, CartResponseDTO.class);
-
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cart")
+@CrossOrigin(origins = "*")
 public class CartController {
     @Autowired
     ICartService cartService;
@@ -25,14 +26,14 @@ public class CartController {
     public ResponseEntity<ResponseDTO> insert(@Valid @RequestBody CartDTO cartDTO,@RequestHeader(name="Authorization") String authHeader) throws UserException, BookException {
 
         ResponseDTO responseCartDTO= ResponseDTO.Build("Your cart details are added!", cartService.add(cartDTO,authHeader));
-        return new ResponseEntity<>(responseCartDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(responseCartDTO, HttpStatus.OK);
     }
 
     @GetMapping("/get/all")
     public ResponseEntity<ResponseDTO> getAll(){
         List<CartResponseDTO> cartList=cartService.getAll();
         ResponseDTO responseCartDTO= ResponseDTO.Build("All cart details are found!",cartList);
-        return new ResponseEntity<>(responseCartDTO,HttpStatus.FOUND);
+        return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
     }
 
 
@@ -40,7 +41,7 @@ public class CartController {
     public ResponseEntity<ResponseDTO> getAllByUserId(@RequestHeader(name="Authorization") String authHeader) throws UserException {
         List<CartResponseDTO> cartResponseDTOList=cartService.getByUserId(authHeader);
         ResponseDTO responseCartDTO= ResponseDTO.Build("Searched cart details by user id is found!",cartResponseDTOList);
-        return new ResponseEntity<>(responseCartDTO,HttpStatus.FOUND);
+        return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")

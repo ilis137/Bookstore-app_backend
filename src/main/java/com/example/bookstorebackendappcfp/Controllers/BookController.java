@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/book")
+@CrossOrigin("*")
 public class BookController {
 
     @Autowired
@@ -45,8 +46,8 @@ public class BookController {
 
 
     @GetMapping("/view/all")
-    public ResponseEntity<ResponseDTO> viewAllBooks(@RequestParam int startPage,@RequestParam int size) throws BookException,MethodArgumentNotValidException{
-        ResponseDTO responseDTO=ResponseDTO.Build("all books from store",bookService.getAllBooks(startPage,size));
+    public ResponseEntity<ResponseDTO> viewAllBooks() throws BookException,MethodArgumentNotValidException{
+        ResponseDTO responseDTO=ResponseDTO.Build("all books from store",bookService.getAllBooks());
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
     }
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin("*")
 public class UserController {
     @Autowired
     private IUserService userService;
@@ -25,6 +26,7 @@ public class UserController {
     JWTUtil jwtUtil;
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO> addUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) throws UserException {
+        System.out.println("register");
         ResponseDTO responseDTO = ResponseDTO.Build("User registration successful", userService.saveUser(userRegistrationDTO));
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
@@ -36,9 +38,9 @@ public class UserController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/retrieve/{id}")
-    public ResponseEntity<ResponseDTO> loginUser(@PathVariable long id) {
-        ResponseDTO responseDTO = ResponseDTO.Build("User data successfully retreived", userService.findUser(id));
+    @GetMapping("/retrieve/user")
+    public ResponseEntity<ResponseDTO> loginUser(@RequestHeader(name="Authorization") String authHeader) {
+        ResponseDTO responseDTO = ResponseDTO.Build("User data successfully retreived", userService.findUser(authHeader));
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 

@@ -32,9 +32,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors();
         http.csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
+                .and().authorizeHttpRequests()
+                .requestMatchers("/api/book/**").permitAll()
                 .and().authorizeHttpRequests()
                 .anyRequest().authenticated()
                 .and()

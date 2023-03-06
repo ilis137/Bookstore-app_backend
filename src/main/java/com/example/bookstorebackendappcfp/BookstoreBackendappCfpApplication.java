@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 public class BookstoreBackendappCfpApplication {
 
     public static void main(String[] args) {
-
         ApplicationContext context=SpringApplication.run(BookstoreBackendappCfpApplication.class, args);
         log.info("Bookstore App Started in {} Environment", context.getEnvironment().getProperty("environment"));
         log.info("Bookstore DB User is {} Environment", context.getEnvironment().getProperty("spring.datasource.username"));

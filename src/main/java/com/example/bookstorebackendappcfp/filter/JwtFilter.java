@@ -8,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,18 +26,20 @@ import java.io.IOException;
 
     @Component
     @RequiredArgsConstructor
+    @Slf4j
     public class JwtFilter extends OncePerRequestFilter {
 
         @Autowired
         private  UserDetailsService userDetailsService;
         @Autowired
         private JWTUtil jwtUtil;
-        private final RequestMatcher ignoredPaths = new AntPathRequestMatcher("/api/auth/**");
-
+        private final RequestMatcher authPaths = new AntPathRequestMatcher("/api/auth/**");
+        private final RequestMatcher bookPaths = new AntPathRequestMatcher("/api/book/**");
+        
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException,IOException{
                 String token = parseJwt(request);
-            if (this.ignoredPaths.matches(request)) {
+            if (this.authPaths.matches(request)||this.bookPaths.matches(request)) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -48,14 +52,16 @@ import java.io.IOException;
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
-
+            
+  
             filterChain.doFilter(request, response);
         }
 
 
         private String parseJwt(HttpServletRequest request) {
+            
             String headerAuth = request.getHeader("Authorization");
-
+            log.info(request.toString());
             if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
                 return headerAuth.substring(7, headerAuth.length());
             }

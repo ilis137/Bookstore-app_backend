@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
-
+import java.util.Optional;
 
 
 @Service
@@ -46,12 +46,12 @@ public class UserService implements IUserService {
     @Override
     public String saveUser(UserRegistrationDTO userRegistrationDTO) throws UserException {
 
-        User user =userRepo.findByEmail(userRegistrationDTO.getEmail()).orElseThrow();
-        if(user!=null){
-            throw new UserException("Error:user already exists");
-        }
+        Optional<User> data = userRepo.findByEmail(userRegistrationDTO.getEmail());
+         if(data.isPresent()){
+             throw new UserException("Error: email already exists");
+         }
         String password = userRegistrationDTO.getPassword();
-         user = modelMapper.map(userRegistrationDTO, User.class);
+        User user = modelMapper.map(userRegistrationDTO, User.class);
         user.setRegisteredDate(LocalDate.now());
         user.setUpdatedDate(LocalDate.now());
         user.setVerified(false);
@@ -80,8 +80,10 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserRegistrationDTO findUser(long id) {
-        return modelMapper.map(userRepo.findById(id), UserRegistrationDTO.class);
+    public UserRegistrationDTO findUser(String authHeader) {
+        String token = jwtUtil.parseToken(authHeader);
+        long userId = jwtUtil.decodeToken(token);
+        return modelMapper.map(userRepo.findById(userId), UserRegistrationDTO.class);
     }
 
     @Override
@@ -96,7 +98,8 @@ public class UserService implements IUserService {
     public String resetPassword(ResetPasswordDTO resetPasswordDTO) throws UserException {
        String email= jwtUtil.getEmailFromToken(resetPasswordDTO.getToken());
         User user=userRepo.findByEmail(email).orElseThrow(()->new UserException("user of this email does not exist "+email));
-        user.setPassword(resetPasswordDTO.getNewPassword());
+        String encodedPassword = passwordEncoder.encode(resetPasswordDTO.getNewPassword());
+        user.setPassword(encodedPassword);
         userRepo.save(user);
         return resetPasswordDTO.getToken();
     }

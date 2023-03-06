@@ -12,7 +12,7 @@ public interface IBookService {
 
     boolean deleteBookById(long id) throws BookException;
 
-    List<BookDTO> getAllBooks(int startPage, int size) throws BookException;
+    List<BookDTO> getAllBooks() throws BookException;
 
     BookDTO getBook(long id) throws BookException;
 

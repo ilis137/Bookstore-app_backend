@@ -75,7 +75,7 @@ public class JWTUtil {
     }
 
     public String getEmailFromToken(String token) {
-
+        log.info(token);
         //for verification algorithm
         Verification verification = null;
         try {
@@ -87,6 +87,7 @@ public class JWTUtil {
         JWTVerifier jwtverifier = verification.build();
         //to decode token
         try {
+           
             DecodedJWT decodedjwt = jwtverifier.verify(token);
             Claim claim = decodedjwt.getClaim("email");
             String email = claim.asString();
