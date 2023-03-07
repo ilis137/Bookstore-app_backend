@@ -66,6 +66,14 @@ public class ApplicationExceptionHandler {
         ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
         return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
     }
+    //---------------------------Cart not Found invalid exception----------------------//
+    @ExceptionHandler(WishlistException.class)
+    public ResponseEntity<ResponseDTO> handleBusinessException(WishlistException exception) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("Error Message", exception.getMessage());
+        ResponseDTO responseDTO = ResponseDTO.Build("Exception while processing Http Method Request", exception.getMessage());
+        return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+    }
 
     //---------------------------Cart not Found invalid exception----------------------//
     @ExceptionHandler(OrderException.class)
