@@ -9,6 +9,8 @@ import com.example.bookstorebackendappcfp.Model.User;
 import com.example.bookstorebackendappcfp.repository.UserRepository;
 import com.example.bookstorebackendappcfp.util.EmailSenderService;
 import com.example.bookstorebackendappcfp.util.JWTUtil;
+import com.example.bookstorebackendappcfp.util.OTPGenerator;
+
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,9 @@ public class UserService implements IUserService {
     @Autowired
     private EmailSenderService emailSenderService;
 
+    @Autowired
+    private OTPGenerator otpGenerator;
+
     private static final ModelMapper modelMapper = new ModelMapper();
 
     @Override
@@ -56,7 +61,7 @@ public class UserService implements IUserService {
         user.setUpdatedDate(LocalDate.now());
         user.setVerified(false);
         user.setKyc(null);
-        user.setOtp(null);
+        user.setOtp(otpGenerator.generateOTP());
         String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
         user = userRepo.save(user);
@@ -105,19 +110,42 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean verifyUser(String token) throws UserException {
+    public boolean verifyUser(String token,String otp) throws UserException {
        long id = jwtUtil.decodeToken(token);
         User user=userRepo.findById(id).orElseThrow(()->new UserException("user of this id does not exist "+token));
-        user.setVerified(true);
-        user=userRepo.save(user);
-        return user.isVerified();
+       log.info(user.getOtp());
+       log.info(otp);
+        if(user.getOtp().equals(otp)){
+            user.setVerified(true);
+            user=userRepo.save(user);
+            log.info(""+user.isVerified());
+            return user.isVerified();
+        }
+            return false;
+        
+     
 
     }
 
+    @Override
+    public String regenerateOTP(String token) throws UserException{
+        long id = jwtUtil.decodeToken(token);
+        User user=userRepo.findById(id).orElseThrow(()->new UserException("user of this id does not exist "+token));
+        String otp=otpGenerator.generateOTP();
+        user.setOtp(otp);
+        userRepo.save(user);
+        sendOTPMail(user);
+        
+        return otp;
+    }
+
+    public void sendOTPMail(User user){
+        emailSenderService.sendEmail(user.getEmail(), "OTP regeneration"," Your new  OTP is: "+user.getOtp()  );
+  }
 
     public void sendRegistrationMail(User user,String token) {
         emailSenderService.sendEmail(user.getEmail(), "Registration",
                 "Congratulations!!, you have successfully registered to book store app," +
-                        " Your registration is successful please verify yourself: http://localhost:8080/api/auth/user/verify/"+ token );
+                        " Your registration is successful please verify yourselfwith OTP: "+user.getOtp()  );
     }
 }

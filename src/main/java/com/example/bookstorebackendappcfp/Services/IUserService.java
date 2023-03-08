@@ -18,5 +18,7 @@ public interface IUserService {
 
     String resetPassword(ResetPasswordDTO resetPasswordDTO) throws UserException;
 
-    boolean verifyUser(String token) throws UserException;
+    boolean verifyUser(String token,String otp) throws UserException;
+   
+    String regenerateOTP(String token) throws UserException;
 }

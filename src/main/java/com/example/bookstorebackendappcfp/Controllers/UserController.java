@@ -57,8 +57,13 @@ public class UserController {
     }
 
     @GetMapping("/user/verify/{token}")
-    public ResponseEntity<ResponseDTO> verifyUser(@PathVariable String token) throws UserException {
-        ResponseDTO responseDTO = ResponseDTO.Build("password reset successful", userService.verifyUser(token));
+    public ResponseEntity<ResponseDTO> verifyUser(@PathVariable String token,@RequestParam String otp) throws UserException {
+        ResponseDTO responseDTO = ResponseDTO.Build("user verification successful", userService.verifyUser(token,otp));
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+    }
+    @GetMapping("/user/generateotp/{token}")
+    public ResponseEntity<ResponseDTO> generateOTP(@PathVariable String token) throws UserException {
+        ResponseDTO responseDTO = ResponseDTO.Build("OTP re-generated", userService.regenerateOTP(token));
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 }
