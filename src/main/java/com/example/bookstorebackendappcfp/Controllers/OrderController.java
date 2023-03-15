@@ -26,14 +26,18 @@ public class OrderController {
     @Autowired
     IOrderService orderService;
 
-    //Create Api for Insert order details in the database
+    // Api for Insert order details in the database
+    //@param orderDTO, order details
+    //@param authHeader, user token
     @PostMapping("/placeOrder")
     public ResponseEntity<ResponseDTO> placeOrder(@Valid @RequestBody OrderDTO orderDTO, @RequestHeader(name = "Authorization") String authHeader) throws UserException, CartException, BookException {
         ResponseDTO responseOrderDTO = ResponseDTO.Build("Order details are submitted!", orderService.placeOrder(orderDTO, authHeader));
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.CREATED);
     }
 
-    //Create Api for Getting all order details present in the database
+    // Api for Getting all order details present in the database
+    //@param orderDTO, order details
+    //@param authHeader, user token
     @GetMapping("/getAll")
     public ResponseEntity<ResponseDTO> getAll() {
         List<OrderDTO> orderList = orderService.getAll();
@@ -41,21 +45,29 @@ public class OrderController {
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.FOUND);
     }
 
-    //Create Api for Getting particular order details which will be found by id
+    // Api for Getting particular order details which will be found by user id
+    //@param authHeader, user token
     @GetMapping("/getByUserId")
     public ResponseEntity<ResponseDTO> getById(@RequestHeader(name = "Authorization") String authHeader) throws UserException {
         List<OrderDTO> orderDTOList = orderService.getByUserId(authHeader);
         ResponseDTO responseOrderDTO = ResponseDTO.Build("Searched order details by id is found!", orderDTOList);
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.FOUND);
     }
-
+    /* 
+     * api to update order details by order id
+     * @param Long, orderId
+     * @param orderDTO, order details
+     * @return ResponseEntity<ResponseDTO>
+     */
     @PutMapping("/updateByOrderId/{orderId}")
     public ResponseEntity<ResponseDTO> updateByOrderId(@PathVariable Long orderId,@Valid @RequestBody OrderDTO orderDTO) throws UserException, OrderException {
         ResponseDTO responseOrderDTO = ResponseDTO.Build("Searched order details by id is found!", orderService.updateByOrderId(orderId,orderDTO));
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.FOUND);
     }
 
-    //Create Api for Deleting particular order details which will be found by id
+    //Create Api for Deleting particular order details which will be found by order id
+     //@param orderDTO, order details
+    //@param authHeader, user token
     @DeleteMapping("/cancel/{orderId}")
     public ResponseEntity<ResponseDTO> cancelById(@PathVariable Long orderId) throws OrderException {
 
@@ -63,6 +75,11 @@ public class OrderController {
         return new ResponseEntity<>(responseOrderDTO, HttpStatus.GONE);
     }
 
+     /* 
+     * api to delete order by order id
+     * @param Long, orderId
+     * @return ResponseEntity<ResponseDTO>
+     */
     @DeleteMapping("/delete/{orderId}")
     public ResponseEntity<ResponseDTO> deleteById(@PathVariable Long orderId) throws OrderException {
         ResponseDTO responseOrderDTO = ResponseDTO.Build("Cart details is canceled!", orderService.deleteById(orderId));

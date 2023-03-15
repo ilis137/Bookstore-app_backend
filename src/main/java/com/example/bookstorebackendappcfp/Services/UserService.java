@@ -21,10 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDate;
 import java.util.Optional;
-
 
 @Service
 @Slf4j
@@ -48,13 +46,21 @@ public class UserService implements IUserService {
 
     private static final ModelMapper modelMapper = new ModelMapper();
 
+    /*
+     * add new user to db,set verification properties to default and send registration mail with otp to verify
+     * 
+     * @param userRegistrationDTO,user details
+     * 
+     * @return token,user token
+     * 
+     */
     @Override
     public String saveUser(UserRegistrationDTO userRegistrationDTO) throws UserException {
 
         Optional<User> data = userRepo.findByEmail(userRegistrationDTO.getEmail());
-         if(data.isPresent()){
-             throw new UserException("Error: email already exists");
-         }
+        if (data.isPresent()) {
+            throw new UserException("Error: email already exists");
+        }
         String password = userRegistrationDTO.getPassword();
         User user = modelMapper.map(userRegistrationDTO, User.class);
         user.setRegisteredDate(LocalDate.now());
@@ -66,24 +72,39 @@ public class UserService implements IUserService {
         user.setPassword(encodedPassword);
         user = userRepo.save(user);
         String token = jwtUtil.createToken(user.getUserId(), user.getEmail());
-        sendRegistrationMail(user,token);
+        sendRegistrationMail(user, token);
         return token;
     }
 
+    
+    /*
+     * authenticate a user with email and password
+     * 
+     * @param loginDTO,user credentials
+     * 
+     * @return token,user token
+     * 
+     */
     @Override
     public String AuthenticateUser(LoginDTO loginDTO) throws UsernamePasswordInvalidException, UserException {
 
-
-            User user = userRepo.findByEmail(loginDTO.getEmail()).orElseThrow(()->new UserException("Error:User not found"));
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
-            String token = jwtUtil.createToken(user.getUserId(), user.getEmail());
-             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return token;
-
+        User user = userRepo.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new UserException("Error:User not found"));
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+        String token = jwtUtil.createToken(user.getUserId(), user.getEmail());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return token;
 
     }
-
+     /*
+     * retrive user
+     * 
+     * @param authHeader,user token
+     * 
+     * @return UserRegistrationDTO
+     * 
+     */
     @Override
     public UserRegistrationDTO findUser(String authHeader) {
         String token = jwtUtil.parseToken(authHeader);
@@ -91,61 +112,110 @@ public class UserService implements IUserService {
         return modelMapper.map(userRepo.findById(userId), UserRegistrationDTO.class);
     }
 
+     /*
+     * start process of forget password ,generate temporary token
+     * 
+     * @param email
+     * 
+     * @return token
+     * 
+     */
     @Override
     public String forgotPassword(String email) throws UserException {
 
-        User user = userRepo.findByEmail(email).orElseThrow(()->new UserException("user of this email does not exist "+email));
-        String token=jwtUtil.createToken(user.getUserId(),user.getEmail());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserException("user of this email does not exist " + email));
+        String token = jwtUtil.createToken(user.getUserId(), user.getEmail());
         return token;
     }
-
+    /*
+     * reset password,return new token
+     * 
+     * @param resetPasswordDTO,new password and temporary token
+     * 
+     * @return token
+     * 
+     */
     @Override
     public String resetPassword(ResetPasswordDTO resetPasswordDTO) throws UserException {
-       String email= jwtUtil.getEmailFromToken(resetPasswordDTO.getToken());
-        User user=userRepo.findByEmail(email).orElseThrow(()->new UserException("user of this email does not exist "+email));
+        String email = jwtUtil.getEmailFromToken(resetPasswordDTO.getToken());
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserException("user of this email does not exist " + email));
         String encodedPassword = passwordEncoder.encode(resetPasswordDTO.getNewPassword());
         user.setPassword(encodedPassword);
         userRepo.save(user);
         return resetPasswordDTO.getToken();
     }
-
+    /*
+     * verify user by otp
+     * 
+     * @param token,
+     * 
+     * @param otp,
+     * 
+     * @return token
+     * 
+     */
     @Override
-    public boolean verifyUser(String token,String otp) throws UserException {
-       long id = jwtUtil.decodeToken(token);
-        User user=userRepo.findById(id).orElseThrow(()->new UserException("user of this id does not exist "+token));
-       log.info(user.getOtp());
-       log.info(otp);
-        if(user.getOtp().equals(otp)){
+    public boolean verifyUser(String token, String otp) throws UserException {
+        long id = jwtUtil.decodeToken(token);
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new UserException("user of this id does not exist " + token));
+        log.info(user.getOtp());
+        log.info(otp);
+        if (user.getOtp().equals(otp)) {
             user.setVerified(true);
-            user=userRepo.save(user);
-            log.info(""+user.isVerified());
+            user = userRepo.save(user);
+            log.info("" + user.isVerified());
             return user.isVerified();
         }
-            return false;
-        
-     
+        return false;
 
     }
-
+    /*
+     * regenerate user  otp
+     * 
+     * @param token,
+     * 
+     * @return otp
+     * 
+     */
     @Override
-    public String regenerateOTP(String token) throws UserException{
+    public String regenerateOTP(String token) throws UserException {
         long id = jwtUtil.decodeToken(token);
-        User user=userRepo.findById(id).orElseThrow(()->new UserException("user of this id does not exist "+token));
-        String otp=otpGenerator.generateOTP();
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new UserException("user of this id does not exist " + token));
+        String otp = otpGenerator.generateOTP();
         user.setOtp(otp);
         userRepo.save(user);
         sendOTPMail(user);
-        
+
         return otp;
     }
-
-    public void sendOTPMail(User user){
-        emailSenderService.sendEmail(user.getEmail(), "OTP regeneration"," Your new  OTP is: "+user.getOtp()  );
-  }
-
-    public void sendRegistrationMail(User user,String token) {
+     /*
+     * send  otp mail
+     * 
+     * @param user,user details
+     * 
+     * @return void
+     * 
+     */
+    public void sendOTPMail(User user) {
+        emailSenderService.sendEmail(user.getEmail(), "OTP regeneration", " Your new  OTP is: " + user.getOtp());
+    }
+     /*
+     * send  registration mail
+     * 
+     * @param user,user details
+     * 
+     * @param token,user token
+     * 
+     * @return void
+     * 
+     */
+    public void sendRegistrationMail(User user, String token) {
         emailSenderService.sendEmail(user.getEmail(), "Registration",
                 "Congratulations!!, you have successfully registered to book store app," +
-                        " Your registration is successful please verify yourselfwith OTP: "+user.getOtp()  );
+                        " Your registration is successful please verify yourselfwith OTP: " + user.getOtp());
     }
 }

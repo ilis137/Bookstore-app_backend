@@ -34,7 +34,13 @@ public class CartService implements ICartService {
     JWTUtil jwtUtil;
 
     private static final ModelMapper modelMapper = new ModelMapper();
-
+    /*
+     * add new cart item into the database by calling cartRepository method
+     * 
+     * @param cartDTO,book details
+     * 
+     * @return cartDTO
+     */
     @Override
     public CartResponseDTO add(CartDTO cartDTO, String authHeader) throws UserException, BookException {
         String token = jwtUtil.parseToken(authHeader);
@@ -45,12 +51,27 @@ public class CartService implements ICartService {
         return modelMapper.map(cartRepository.save(cart), CartResponseDTO.class);
     }
 
+      /*
+     * get all cart details by cartRepository method
+     * 
+     * @param bookId,book id
+     * 
+     * @param cartDTO,book details
+     * 
+     * @return cartDTO list
+     */
     @Override
     public List<CartResponseDTO> getAll() {
         List<Cart> cartList = cartRepository.findAll();
         return cartList.stream().map(cartItem -> modelMapper.map(cartItem, CartResponseDTO.class)).collect(Collectors.toList());
     }
-
+      /*
+     * get all cart details for user by cartRepository method
+     * 
+     * @param authHeader
+     * 
+     * @return cartDTO list
+     */
     @Override
     public List<CartResponseDTO> getByUserId(String authHeader) throws UserException {
         String token = jwtUtil.parseToken(authHeader);
@@ -65,7 +86,13 @@ public class CartService implements ICartService {
         return null;
 
     }
-
+    /*
+     * delete cart details by cart id by cartRepository method
+     * 
+     * @param id,cart id
+     * 
+     * @return boolean
+     */
     @Override
     public void deleteById(Long id) throws CartException {
         try {
@@ -74,7 +101,15 @@ public class CartService implements ICartService {
             throw new CartException("cart with id " + id + " not found");
         }
     }
-
+    /*
+     * change quantity of cart item by cartRepository method
+     * 
+     * @param id,cart id
+     * 
+     * @param quantity,long
+     * 
+     * @return cartDTO
+     */
     @Override
     public CartResponseDTO UpdateQuantity( Long id,Long quantity) throws CartException {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new CartException("cart with id " + id + " not found"));

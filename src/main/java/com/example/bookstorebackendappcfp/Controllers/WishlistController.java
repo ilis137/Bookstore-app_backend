@@ -33,21 +33,39 @@ public class WishlistController {
     @Autowired
     IWishlistService wishlistService;
 
-  
+    /*
+     * api to add a book to wish list of user
+     * 
+     * @param wishlistDTO, book data
+     * 
+     * @return ResponseEntity<ResponseDTO>
+     */
   @PostMapping("/add")
-  public ResponseEntity<ResponseDTO> insert(@Valid @RequestBody WishlistDTO cartDTO,@RequestHeader(name="Authorization") String authHeader) throws UserException, BookException{
-      ResponseDTO responseCartDTO= ResponseDTO.Build("Your cart details are added!", wishlistService.addToWishlist(authHeader,cartDTO));
+  public ResponseEntity<ResponseDTO> insert(@Valid @RequestBody WishlistDTO wishlistDTO,@RequestHeader(name="Authorization") String authHeader) throws UserException, BookException{
+      ResponseDTO responseCartDTO= ResponseDTO.Build("Your cart details are added!", wishlistService.addToWishlist(authHeader,wishlistDTO));
       return new ResponseEntity<>(responseCartDTO, HttpStatus.OK);
   }
 
-  
+    /*
+     * api to get wishlist for user 
+     * 
+     * @param authHeader, user token
+     * 
+     * @return ResponseEntity<ResponseDTO>
+     */
   @GetMapping("/getByUserId")
   public ResponseEntity<ResponseDTO> getAllByUserId(@RequestHeader(name="Authorization") String authHeader) throws UserException {
       List<WishlistResponseDTO> cartResponseDTOList=wishlistService.getWishlist(authHeader);
       ResponseDTO responseCartDTO= ResponseDTO.Build("Searched cart details by user id is found!",cartResponseDTOList);
       return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
   }
-
+    /*
+     * api to remove a item from wishlist for user
+     * 
+     * @param id, wishlist item id
+     * 
+     * @return ResponseEntity<ResponseDTO>
+     */
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<ResponseDTO> deleteById(@PathVariable Long id) throws WishlistException, UserException {
     wishlistService.deleteFromWishlist(id);

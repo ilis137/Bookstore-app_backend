@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
+
+    //fetch cart details by user id
     @Query(value = "select * from cart_table where cart_table.user_id=:userId",nativeQuery = true)
     List<Cart> findByUserId(Long userId);
 }

@@ -29,7 +29,7 @@ public class SecurityConfig {
 
     @Autowired
     private AuthEntryPoint unauthorizedHandler;
-
+     //defines  url authorization permitsand a dds filters
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors();

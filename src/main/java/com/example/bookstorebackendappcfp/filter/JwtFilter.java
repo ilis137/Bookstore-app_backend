@@ -39,11 +39,12 @@ import java.io.IOException;
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException,IOException{
                 String token = parseJwt(request);
+                //checks if requested resources uri in ignored paths
             if (this.authPaths.matches(request)||this.bookPaths.matches(request)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-
+           
             String email=jwtUtil.getEmailFromToken(token);
                     if(email!=null && SecurityContextHolder.getContext().getAuthentication() == null){
                         UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
@@ -57,7 +58,7 @@ import java.io.IOException;
             filterChain.doFilter(request, response);
         }
 
-
+        //extract token from auth header
         private String parseJwt(HttpServletRequest request) {
             
             String headerAuth = request.getHeader("Authorization");

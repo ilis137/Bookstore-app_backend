@@ -101,7 +101,7 @@ public class JWTUtil {
         return null;
 
     }
-
+    //extract token from authorization header
     public String parseToken(String authHeader) {
 
 

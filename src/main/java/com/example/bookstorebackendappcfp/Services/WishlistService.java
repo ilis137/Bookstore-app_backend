@@ -37,6 +37,14 @@ public class WishlistService implements IWishlistService{
     JWTUtil jwtUtil;
 
     private static final ModelMapper modelMapper = new ModelMapper();
+      /*
+     * add new wishlist item into the database by calling wishlistRepository method
+     * 
+     * @param wishlistDTO,wishlist details
+     * 
+     * @return WishlistResponseDTO
+     */
+    @Override
     public WishlistResponseDTO addToWishlist(String authHeader,WishlistDTO WishlistDTO) throws UserException, BookException{
         String token = jwtUtil.parseToken(authHeader);
         long userId = jwtUtil.decodeToken(token);
@@ -46,6 +54,13 @@ public class WishlistService implements IWishlistService{
         Wishlist wish = new Wishlist(user, book);
         return modelMapper.map(wishlistRepository.save(wish), WishlistResponseDTO.class);
     }
+     /*
+     * get all wishlist details for user by wishlistRepository method
+     * 
+     * @param authHeader
+     * 
+     * @return WishlistResponseDTO list
+     */
     @Override
     public List<WishlistResponseDTO> getWishlist(String authHeader) throws UserException {
         String token = jwtUtil.parseToken(authHeader);
@@ -60,6 +75,13 @@ public class WishlistService implements IWishlistService{
         return null;
        
     }
+     /*
+     * delete cart details by wishlist id 
+     * 
+     * @param id,wishlist id
+     * 
+     * @return boolean
+     */
     @Override
     public void deleteFromWishlist(long id) throws UserException, WishlistException {
         try {

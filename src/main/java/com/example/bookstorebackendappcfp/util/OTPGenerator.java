@@ -10,7 +10,8 @@ public class OTPGenerator {
     private StringBuilder generatedOTP = new StringBuilder();
     private SecureRandom secureRandom = new SecureRandom();
     private int lengthOfOTP = 6;
-
+     
+    /* generate six digit otp */
     public String generateOTP() {
         
         try{

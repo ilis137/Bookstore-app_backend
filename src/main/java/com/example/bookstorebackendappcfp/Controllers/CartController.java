@@ -22,6 +22,12 @@ public class CartController {
     @Autowired
     ICartService cartService;
 
+    /* 
+     * api to add a new book to cart
+     * @param CartDTO cartDTO
+     * @param authHeader
+     * @return  ResponseEntity<ResponseDTO>
+     */
     @PostMapping("/add")
     public ResponseEntity<ResponseDTO> insert(@Valid @RequestBody CartDTO cartDTO,@RequestHeader(name="Authorization") String authHeader) throws UserException, BookException {
 
@@ -29,6 +35,11 @@ public class CartController {
         return new ResponseEntity<>(responseCartDTO, HttpStatus.OK);
     }
 
+    /* 
+     * api to add a new book to cart
+     * 
+     * @return  ResponseEntity<ResponseDTO>
+     */
     @GetMapping("/get/all")
     public ResponseEntity<ResponseDTO> getAll(){
         List<CartResponseDTO> cartList=cartService.getAll();
@@ -36,7 +47,13 @@ public class CartController {
         return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
     }
 
-
+    
+    /* 
+     * api to add a fetch book in cart by user token
+     * @param authHeader ,user token
+     *
+     * @return  ResponseEntity<ResponseDTO>
+     */
     @GetMapping("/getByUserId")
     public ResponseEntity<ResponseDTO> getAllByUserId(@RequestHeader(name="Authorization") String authHeader) throws UserException {
         List<CartResponseDTO> cartResponseDTOList=cartService.getByUserId(authHeader);
@@ -44,13 +61,27 @@ public class CartController {
         return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
     }
 
+
+    
+    /* 
+     * api to delete a book in cart by cart id
+     * @param id ,id of cart item
+     *
+     * @return  ResponseEntity<ResponseDTO>
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ResponseDTO> deleteById(@PathVariable Long id) throws CartException {
         cartService.deleteById(id);
         ResponseDTO responseCartDTO= ResponseDTO.Build("Cart details is deleted for cart id "+id,true);
         return new ResponseEntity<>(responseCartDTO,HttpStatus.OK);
     }
-
+      /* 
+     * api to update a book in cart by cart id
+     *  @param id ,id of cart item
+     * @param quantity ,new quantity of  book in cart
+     *
+     * @return  ResponseEntity<ResponseDTO>
+     */
     @PutMapping("/updateQuantity/{id}")
     public ResponseEntity<ResponseDTO> updateQuantity(@PathVariable Long id,@RequestParam Long quantity) throws CartException {
         ResponseDTO responseCartDTO= ResponseDTO.Build("Your cart quantity is updated for cart id "+id,cartService.UpdateQuantity(id,quantity));
